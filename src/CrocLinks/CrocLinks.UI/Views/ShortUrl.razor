@@ -1,0 +1,60 @@
+﻿@page "/{Token}"
+
+@using Microsoft.AspNetCore.Http
+
+@using MediatR
+@using AutoMapper
+
+@using CrocLinks.UI.Features.LinkShortener.Models
+@using CrocLinks.UI.Features.LinkShortener.ViewModels
+@using CrocLinks.UI.Features.LinkShortener.Requests
+
+@namespace CrocLinks.UI.Features.LinkShortener.Views
+
+@inject IMediator _mediator
+@inject IMapper _mapper
+@inject IJSRuntime _js
+@inject NavigationManager _navigate
+
+@code
+{
+    [Parameter]
+    public string Token { get; set; }
+    public LinkViewModel Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GetUrlByTokenRequest query = new GetUrlByTokenRequest()
+        {
+            Token = Token
+        };
+
+        LinkModel model = await _mediator.Send(query);
+
+        if (model != null)
+            Model = _mapper.Map<LinkViewModel>(model);
+
+        //_navigate.NavigateTo(Model.OriginalUrl);
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Model != null)
+                await _js.InvokeVoidAsync("directToUrl", Model.OriginalUrl);
+
+        }
+    }
+}
+
+@if (Model == null)
+{
+    <Heading Size="HeadingSize.Is3">That link doesn't match any of our records... <Icon Name="@("far fa-sad-cry")"></Icon></Heading>
+    <Heading Size="HeadingSize.Is5">Click <a href="/">here</a> to create some links of your own!</Heading>
+}
+else
+{
+    <Heading Size="HeadingSize.Is3">Croc Links is redirecting you...</Heading>
+}
+
