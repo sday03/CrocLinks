@@ -63,7 +63,7 @@ namespace CrocLinks.API
                 s.EnableAnnotations();
             });
 
-            services.AddDbContext<LinkShortenerContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnectionString")));
+            services.AddDbContext<LinkShortenerContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ShortLinkGenerator>();
         }
 

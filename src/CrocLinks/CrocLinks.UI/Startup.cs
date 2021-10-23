@@ -7,19 +7,21 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.HttpOverrides;
+
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 using MediatR;
 using AutoMapper;
-using CorrelationId;
-using CorrelationId.DependencyInjection;
 using Serilog;
 
 using CrocLinks.UI.Infrastructure;
@@ -42,11 +44,12 @@ namespace CrocLinks.UI
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddDefaultCorrelationId(options =>
+            services.AddBlazorise(options =>
             {
-                options.RequestHeader = "X-Correlation-ID";
-                options.ResponseHeader = "X-Correlation-ID";
-            });
+                options.ChangeTextOnKeyPress = true; // optional
+            })
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -77,7 +80,6 @@ namespace CrocLinks.UI
                 app.UseHsts();
             }
 
-            app.UseCorrelationId();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

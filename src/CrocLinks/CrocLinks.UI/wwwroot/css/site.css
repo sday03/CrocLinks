@@ -2,7 +2,64 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100%;
 }
+
+
+#main-content-form {
+    background-color: #ffffff;
+    margin: auto;
+    width: 66%;
+    opacity: 0.9;
+    border-radius: 0.5rem;
+}
+
+.result-content {
+    width: 66%;
+    margin: auto;
+    background-color: #fff;
+    opacity: 0.9;
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.metric-content {
+    background-color: #fff;
+    opacity: 0.9;
+    margin-top: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.bg-image-1 {
+    background-image: url("/imgs/crocodile-clipart-1.png");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.top-row {
+    display: block;
+    align-items: center;
+    background-color :#445e4c;
+}
+
+.main {
+    font-family: Circular-Book, Arial, sans-serif;
+   /* background-color: rgb(245, 241, 240);
+    color: rgb(91, 78, 70);*/
+    flex: 1;
+}
+
+.main-heading {
+    display: inline;
+    font-weight: bold;
+    color: #00300e;
+    vertical-align: text-bottom;
+}
+
+
 
 a, .btn-link {
     color: #0366d6;

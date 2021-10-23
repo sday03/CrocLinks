@@ -16,7 +16,9 @@ namespace CrocLinks.API.Features.LinkShortener.Profiles
         {
             CreateMap<Link, LinkViewModel>()
                 .ForMember(x => x.Token, x => x.MapFrom(y => y.LinkToken))
-                .ForMember(x => x.ShortenedUrl, x => x.MapFrom(y => y.ShortenedLink));
+                .ForMember(x => x.OriginalUrl, x => x.MapFrom(y => y.OriginalLink));
+
+            CreateMap<LinkMetric, LinkMetricViewModel>();
         }
     }
 }
