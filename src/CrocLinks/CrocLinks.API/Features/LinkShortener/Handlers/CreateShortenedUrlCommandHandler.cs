@@ -30,24 +30,31 @@ namespace CrocLinks.API.Features.LinkShortener.Handlers
             using (_db)
             using (IDbCommand command = _db.Database.GetDbConnection().CreateCommand())
             {
-                await _db.Database.OpenConnectionAsync();
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = @"dbo.GetNextLinkID";
-                long id = (long)command.ExecuteScalar();
 
-                string token = _generator.GenerateToken(id);
+                Link link = await _db.Links.SingleOrDefaultAsync(x => x.OriginalLink == request.OriginalUrl, cancellationToken);
 
-                Link link = new Link()
+                if (link == null)
                 {
-                    LinkId = id,
-                    LinkCreatedDate = DateTime.Now,
-                    LinkToken = token,
-                    OriginalLink = request.UrlToShorten,
-                    ShortenedLink = "/" + token
-                };
 
-                await _db.Links.AddAsync(link);
-                await _db.SaveChangesAsync();
+                    await _db.Database.OpenConnectionAsync();
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = @"dbo.GetNextLinkID";
+                    long id = (long)command.ExecuteScalar();
+
+                    string token = _generator.GenerateToken(id);
+
+                    link = new Link()
+                    {
+                        LinkId = id,
+                        LinkCreatedDate = DateTime.Now,
+                        LinkToken = token,
+                        OriginalLink = request.OriginalUrl,
+                        ShortenedLink = "/" + token
+                    };
+
+                    await _db.Links.AddAsync(link);
+                    await _db.SaveChangesAsync();
+                }
 
                 return link;
             }

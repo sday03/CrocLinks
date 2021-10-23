@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace CrocLinks.API.Features.LinkShortener.ViewModels
 {
-    public class LinkViewModel
+    public class LinkMetricViewModel
     {
-        public string Token { get; set; }
-        public string OriginalUrl { get; set; }
+        public long LinkCount { get; set; }
+        public long LinksClicked { get; set; }
     }
 }

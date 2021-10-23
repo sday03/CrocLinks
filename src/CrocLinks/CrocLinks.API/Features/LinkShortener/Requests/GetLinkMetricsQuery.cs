@@ -9,8 +9,7 @@ using CrocLinks.API.Features.LinkShortener.Models;
 
 namespace CrocLinks.API.Features.LinkShortener.Requests
 {
-    public class CreateShortenedUrlCommand : IRequest<Link>
+    public class GetLinkMetricsQuery : IRequest<LinkMetric>
     {
-        public string OriginalUrl { get; set; }
     }
 }

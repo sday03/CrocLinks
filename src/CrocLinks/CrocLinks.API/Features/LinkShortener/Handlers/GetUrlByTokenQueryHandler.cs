@@ -8,7 +8,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using CrocLinks.API.Features.LinkShortener.Models;
-using CrocLinks.API.Features.LinkShortener.ViewModels;
 using CrocLinks.API.Features.LinkShortener.Requests;
 
 namespace CrocLinks.API.Features.LinkShortener.Handlers
@@ -26,7 +25,21 @@ namespace CrocLinks.API.Features.LinkShortener.Handlers
         {
             using (_db)
             {
-                return await _db.Links.SingleOrDefaultAsync(x => x.LinkToken == request.Token);
+                Link link = await _db.Links.SingleOrDefaultAsync(x => x.LinkToken == request.Token);
+
+                if(link != null)
+                {
+                    LinkUsage usage = new LinkUsage()
+                    {
+                        LinkClickedDate = DateTime.Now,
+                        LinkId = link.LinkId
+                    };
+
+                    await _db.LinkUsages.AddAsync(usage, cancellationToken);
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+
+                return link;
             }
         }
     }

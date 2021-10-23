@@ -14,7 +14,8 @@ namespace CrocLinks.API.Features.LinkShortener.Infrastructure
     {
         public string GenerateToken(long number)
         {
-             return Base36.NumberToBase36(number);
+            // base36 seems to be in common usage for url shorteners
+            return Base36.NumberToBase36(number);
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 using MediatR;
 
-using CrocLinks.API.Features.LinkShortener.Models;
+using CrocLinks.UI.Features.LinkShortener.Models;
 
-namespace CrocLinks.API.Features.LinkShortener.Requests
+namespace CrocLinks.UI.Features.LinkShortener.Requests
 {
-    public class CreateShortenedUrlCommand : IRequest<Link>
+    public class CreateShortenedUrlCommand : IRequest<LinkModel>
     {
         public string OriginalUrl { get; set; }
     }
