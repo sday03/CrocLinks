@@ -1,0 +1,114 @@
+﻿@using MediatR
+@using AutoMapper;
+@using Blazorise.Charts
+
+@using CrocLinks.UI.Features.LinkShortener.ViewModels
+@using CrocLinks.UI.Features.LinkShortener.Models
+@using CrocLinks.UI.Features.LinkShortener.Requests
+
+@namespace CrocLinks.UI.Views
+@page "/"
+
+@inject IMediator _mediator
+@inject IMapper _mapper
+@inject IJSRuntime _js
+@inject NavigationManager _navagator
+
+@code
+{
+    public LinkViewModel Model { get; private set; }
+    public LinkMetricModel Metrics { get; private set; }
+
+    public string TextInput { get; private set; }
+    public bool IsLoading { get; private set; }
+    public bool IsCopiedToClipboard { get; private set; }
+
+    public string ShortenedUrl => Model == null
+        ? string.Empty
+        : _navagator.BaseUri + "/" + Model.Token;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsageData();
+        await base.OnInitializedAsync();
+    }
+}
+
+<div class="p-5" id="main-content-form">
+    <DisplayHeading Size="DisplayHeadingSize.Is4" Alignment="TextAlignment.Center">Welcome to Croc Links, enter a link below to be shortened (eaten!)</DisplayHeading>
+    <Addons Class="pt-3">
+        <Addon AddonType="AddonType.Body">
+            <TextEdit Placeholder="Enter a url to be eaten!" Size="Size.ExtraLarge" @bind-Text="@TextInput" ChangeTextOnKeyPress="true"></TextEdit>
+        </Addon>
+        <Addon AddonType="AddonType.End">
+            <Button Size="Size.ExtraLarge" Color="@Color.Primary" Style="min-width: 115px;" Clicked="@Submit" Loading="@IsLoading" Disabled="@string.IsNullOrEmpty(TextInput)">
+                Eat!
+            </Button>
+        </Addon>
+    </Addons>
+</div>
+
+@if (Model != null)
+{
+    <Container Class="result-content rounded-bottom">
+        <Addons Class="py-3">
+            <Addon AddonType="AddonType.Body">
+                <TextEdit Size="Size.ExtraLarge" Text="@ShortenedUrl"></TextEdit>
+            </Addon>
+            <Addon AddonType="AddonType.End">
+                <Button Size="Size.ExtraLarge" Color="@(IsCopiedToClipboard ? Color.Primary : Color.Secondary)" Style="min-width: 115px;" Clicked="@Copy">
+                    @(IsCopiedToClipboard ? "Copied!" : "Copy")
+                </Button>
+            </Addon>
+        </Addons>
+    </Container>
+}
+@if (Metrics != null)
+{
+
+<Container Class="metric-content py-3">
+    <Heading Size="HeadingSize.Is1">Join the great link shortening by eating big links down to cool small ones!</Heading>
+    <Heading Class="my-2" TextColor="TextColor.Primary" Size="HeadingSize.Is2">@(Metrics.LinkCount.ToString()) links shortened</Heading>
+    <Heading TextColor="TextColor.Primary" Size="HeadingSize.Is2">@(Metrics.LinksClicked.ToString()) links clicked</Heading>
+</Container>
+
+}
+
+@code{
+
+    private async Task Submit()
+    {
+        string formattedUrl = TextInput.ToLower();
+
+        if(!formattedUrl.StartsWith("http"))
+        {
+            formattedUrl = formattedUrl
+                .Replace("www.", "");
+
+            formattedUrl = "https://" + formattedUrl;
+        }
+
+        CreateShortenedUrlCommand command = new CreateShortenedUrlCommand()
+        {
+            OriginalUrl = formattedUrl
+        };
+
+        LinkModel result = await _mediator.Send(command);
+        Model = _mapper.Map<LinkViewModel>(result);
+
+        await GetUsageData();
+    }
+
+    private async Task Copy()
+    {
+        await _js.InvokeVoidAsync("copyToClipBoard", ShortenedUrl);
+        IsCopiedToClipboard = true;
+    }
+
+    private async Task GetUsageData()
+    {
+        Metrics = await _mediator.Send(new GetLinkMetricsQuery());
+
+        StateHasChanged();
+    }
+}
